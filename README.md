@@ -9,6 +9,12 @@
 - 🔄 虚拟玩家死亡后**自动重新召唤**，始终保持满额
 - 🎲 玩家名称随机生成，贴近真实玩家风格，自然不突兀
 
+## **Secret 填写说明**
+添加一个名为 `CONFIG` 的 Secret，值为以下 JSON 格式，填入你的参数：
+```json
+{"UUID":"","NEZHA_SERVER":"","NEZHA_KEY":"","ARGO_DOMAIN":"","ARGO_AUTH":"","ARGO_PORT":"9010","HY2_PORT":"","S5_PORT":"","CFIP":"","CFPORT":"443","NAME":"","CHAT_ID":"","BOT_TOKEN":""}
+```
+
 ## 🖥️ 适用场景
 
 专为**对在线玩家数量有要求**的服务器平台设计，例如：
