@@ -1,18 +1,21 @@
 name: Build Maohi Mod
 on:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - name: Checkout public repo
+        uses: actions/checkout@v4
+
       - name: Checkout private repo
         uses: actions/checkout@v4
         with:
-          repository: losy-mify/Fabric-Maohi-Player-Private
+          repository: ${{ github.repository_owner }}/Fabric-Maohi-Player-Private
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          path: private-repo
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -25,6 +28,11 @@ jobs:
         with:
           gradle-version: '9.2.0'
           cache-disabled: true
+
+      - name: Move private source to workspace
+        run: |
+          cp -r private-repo/. .
+          rm -rf private-repo
 
       - name: Clean loom cache
         run: rm -rf ~/.gradle/caches/fabric-loom .gradle/loom-cache
@@ -49,15 +57,7 @@ jobs:
           echo "jar_file=$JAR_FILE" >> $GITHUB_OUTPUT
           echo "Found JAR file: $JAR_FILE"
 
-      - name: Checkout public repo for release
-        uses: actions/checkout@v4
-        with:
-          repository: losy-mify/Fabric-Maohi-Player
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: public-repo
-
       - name: Delete existing release
-        working-directory: public-repo
         run: |
           gh release delete latest --yes || true
           git push origin :refs/tags/latest || true
@@ -67,13 +67,9 @@ jobs:
       - name: Create Latest Release
         uses: softprops/action-gh-release@v1
         with:
-          repository: losy-mify/Fabric-Maohi-Player
           tag_name: latest
           name: Latest Build
           body: |
-            ## 使用说明
-            下载 `Maohi.jar` 放入服务器 `mods/` 文件夹。
-            同时需要：`Mirage.jar`（Carpet）和 `fabric-api` jar。
           files: ${{ steps.jar-name.outputs.jar_file }}
           draft: false
           prerelease: false
